@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const BOOKING_URL = 'https://n1381235.alteg.io/';
-/** Якорь секции с виджетом — запись остаётся на вашем сайте */
-const BOOKING_ANCHOR = '#booking';
 const PHONE_DISPLAY = '+998 93 700 24-42';
 const PHONE_TEL = '+998937002442';
 const INSTAGRAM = 'https://www.instagram.com/thems.barberia/';
@@ -34,7 +32,7 @@ const NAV = [
   { href: '#services', label: 'Услуги' },
   { href: '#masters', label: 'Мастера' },
   { href: '#about', label: 'О нас' },
-  { href: '#booking', label: 'Запись' },
+  { label: 'Запись', booking: true },
   { href: '#contacts', label: 'Контакты' },
 ];
 
@@ -189,6 +187,16 @@ function IconMenu({ open, variant }) {
 export default function App() {
   const [headerOnDark, setHeaderOnDark] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+
+  const openBooking = useCallback(() => {
+    setBookingModalOpen(true);
+    setMenuOpen(false);
+  }, []);
+
+  const closeBooking = useCallback(() => {
+    setBookingModalOpen(false);
+  }, []);
 
   useEffect(() => {
     const probeLine = () => {
@@ -222,11 +230,20 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    document.body.style.overflow = menuOpen || bookingModalOpen ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
     };
-  }, [menuOpen]);
+  }, [menuOpen, bookingModalOpen]);
+
+  useEffect(() => {
+    if (!bookingModalOpen) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') closeBooking();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [bookingModalOpen, closeBooking]);
 
   const headerShell =
     headerOnDark && !menuOpen
@@ -293,7 +310,7 @@ export default function App() {
             aria-label="Основная навигация"
           >
             {NAV.map((item, i) => (
-              <span key={item.href} className="flex items-center gap-4">
+              <span key={item.booking ? 'nav-booking' : item.href} className="flex items-center gap-4">
                 {i > 0 ? (
                   <span
                     className={`font-sans text-[12px] transition-colors duration-300 ${menuOpen ? 'text-[#163a2e]/25' : sepClass}`}
@@ -302,23 +319,34 @@ export default function App() {
                     ·
                   </span>
                 ) : null}
-                <a
-                  href={item.href}
-                  className={`font-sans text-[12px] uppercase tracking-[3px] transition-colors duration-300 ${menuOpen ? 'text-[#163a2e]/85 hover:text-[#163a2e]' : navLink}`}
-                >
-                  {item.label}
-                </a>
+                {item.booking ? (
+                  <button
+                    type="button"
+                    onClick={openBooking}
+                    className={`font-sans text-[12px] uppercase tracking-[3px] transition-colors duration-300 ${menuOpen ? 'text-[#163a2e]/85 hover:text-[#163a2e]' : navLink}`}
+                  >
+                    {item.label}
+                  </button>
+                ) : (
+                  <a
+                    href={item.href}
+                    className={`font-sans text-[12px] uppercase tracking-[3px] transition-colors duration-300 ${menuOpen ? 'text-[#163a2e]/85 hover:text-[#163a2e]' : navLink}`}
+                  >
+                    {item.label}
+                  </a>
+                )}
               </span>
             ))}
           </nav>
 
           <div className="relative z-10 flex items-center gap-4">
-            <a
-              href={BOOKING_ANCHOR}
+            <button
+              type="button"
+              onClick={openBooking}
               className={`hidden rounded-none px-5 py-2.5 font-sans text-[11px] font-semibold uppercase tracking-[2px] transition-colors duration-300 md:inline-flex ${menuOpen ? 'border border-[#163a2e] bg-[#163a2e] text-white hover:bg-[#1f5040]' : ctaPrimary}`}
             >
               Записаться
-            </a>
+            </button>
 
             <button
               type="button"
@@ -341,23 +369,37 @@ export default function App() {
             className={`flex flex-col gap-8 border-t px-8 py-10 transition-colors duration-300 ${mobilePanel} ${menuOpen ? (headerOnDark ? 'border-[rgba(255,255,255,0.15)]' : 'border-[rgba(22,58,46,0.12)]') : 'border-transparent'}`}
             aria-label="Мобильная навигация"
           >
-            {NAV.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className={`font-serif text-3xl italic transition-colors duration-300 ${mobileLink}`}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
-            <a
-              href={BOOKING_ANCHOR}
+            {NAV.map((item) =>
+              item.booking ? (
+                <button
+                  key="nav-booking-mobile"
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    openBooking();
+                  }}
+                  className={`text-left font-serif text-3xl italic transition-colors duration-300 ${mobileLink}`}
+                >
+                  {item.label}
+                </button>
+              ) : (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className={`font-serif text-3xl italic transition-colors duration-300 ${mobileLink}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ),
+            )}
+            <button
+              type="button"
               className={`mt-2 inline-flex w-fit rounded-none border px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[2px] transition-colors duration-300 ${mobileCta}`}
-              onClick={() => setMenuOpen(false)}
+              onClick={openBooking}
             >
               Записаться
-            </a>
+            </button>
           </nav>
         </div>
       </header>
@@ -392,12 +434,13 @@ export default function App() {
               Премиальный барбершоп в центре Ташкента
             </p>
 
-            <a
-              href={BOOKING_ANCHOR}
+            <button
+              type="button"
+              onClick={openBooking}
               className="mt-10 inline-flex w-full max-w-[min(100%,320px)] justify-center bg-white px-8 py-4 font-sans text-[12px] font-semibold uppercase tracking-[3px] text-[#163a2e] transition-colors duration-300 hover:bg-[#f4f7f5] sm:w-auto sm:max-w-none sm:px-[52px]"
             >
               ЗАПИСАТЬСЯ ОНЛАЙН
-            </a>
+            </button>
           </div>
         </section>
 
@@ -466,12 +509,13 @@ export default function App() {
             </div>
 
             <div className="mt-16 flex flex-wrap gap-6">
-              <a
-                href={BOOKING_ANCHOR}
+              <button
+                type="button"
+                onClick={openBooking}
                 className="inline-flex bg-white px-10 py-4 font-sans text-[11px] font-semibold uppercase tracking-[2px] text-[#163a2e] transition-colors duration-300 hover:bg-[#f4f7f5]"
               >
                 Выбрать время
-              </a>
+              </button>
             </div>
           </div>
         </section>
@@ -512,12 +556,13 @@ export default function App() {
             </div>
 
             <div className="mt-14 flex justify-center">
-              <a
-                href={BOOKING_ANCHOR}
+              <button
+                type="button"
+                onClick={openBooking}
                 className="inline-flex bg-[#163a2e] px-10 py-4 font-sans text-[11px] font-semibold uppercase tracking-[2px] text-white transition-colors duration-300 hover:bg-[#1f5040]"
               >
                 Записаться
-              </a>
+              </button>
             </div>
           </div>
         </section>
@@ -615,41 +660,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* ОНЛАЙН-ЗАПИСЬ — виджет Altegio внутри страницы */}
-        <section
-          id="booking"
-          data-header-theme="light"
-          className="scroll-mt-28 bg-[#f4f7f5] py-20 lg:py-28"
-        >
-          <div className="mx-auto max-w-[1100px] px-6 lg:px-10">
-            <h2 className="font-serif text-[clamp(40px,5vw,56px)] italic text-[#163a2e]">Онлайн-запись</h2>
-            <div className="mt-5 h-px w-16 bg-[rgba(22,58,46,0.12)]" aria-hidden />
-            <p className="mt-6 max-w-2xl font-sans text-[14px] leading-relaxed text-[#4a7060]">
-              Выберите услугу, мастера и время — форма загружается здесь, без перехода на другую вкладку.
-            </p>
-            <div className="mt-10 overflow-hidden rounded-sm border border-[rgba(22,58,46,0.2)] bg-[#ffffff] shadow-[0_2px_12px_rgba(22,58,46,0.12)]">
-              <iframe
-                title="Онлайн-запись Thems Barberia (Altegio)"
-                src={BOOKING_URL}
-                className="min-h-[min(85vh,880px)] w-full border-0"
-                loading="lazy"
-              />
-            </div>
-            <p className="mt-6 font-sans text-[13px] text-[#4a7060]">
-              Если окно пустое или недоступно в браузере, можно{' '}
-              <a
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="text-[#163a2e] underline underline-offset-4 transition-colors hover:text-[#1f5040]"
-              >
-                открыть запись на сайте Altegio
-              </a>
-              .
-            </p>
-          </div>
-        </section>
-
         {/* КОНТАКТЫ */}
         <section id="contacts" data-header-theme="light" className="scroll-mt-28 bg-[#ffffff] py-24 lg:py-32">
           <div className="mx-auto max-w-[1100px] px-6 lg:px-10">
@@ -704,20 +714,22 @@ export default function App() {
                   </div>
                   <div>
                     <p className="font-sans text-[10px] uppercase tracking-[4px] text-[#163a2e]">Запись</p>
-                    <a
-                      href={BOOKING_ANCHOR}
+                    <button
+                      type="button"
+                      onClick={openBooking}
                       className="mt-4 inline-flex font-sans text-[14px] text-[#163a2e] underline decoration-[rgba(22,58,46,0.2)] underline-offset-[6px] transition-opacity hover:opacity-75"
                     >
-                      Форма записи на странице
-                    </a>
+                      Открыть форму записи
+                    </button>
                   </div>
                 </div>
-                <a
-                  href={BOOKING_ANCHOR}
+                <button
+                  type="button"
+                  onClick={openBooking}
                   className="mt-12 inline-flex w-fit bg-[#163a2e] px-10 py-4 font-sans text-[12px] font-semibold uppercase tracking-[3px] text-white transition-colors duration-300 hover:bg-[#1f5040] lg:mt-0"
                 >
                   Онлайн-запись
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -735,6 +747,56 @@ export default function App() {
           </p>
         </div>
       </footer>
+
+      {/* Модалка записи (Altegio в iframe), как на Uncle Chill */}
+      {bookingModalOpen ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-end justify-center p-0 sm:items-center sm:p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="booking-modal-title"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-[#163a2e]/70 backdrop-blur-[2px]"
+            aria-label="Закрыть"
+            onClick={closeBooking}
+          />
+          <div className="relative z-10 flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-[18px] border border-[rgba(22,58,46,0.2)] bg-[#ffffff] shadow-[0_-8px_40px_rgba(22,58,46,0.2)] sm:rounded-sm sm:shadow-2xl">
+            <div className="flex shrink-0 items-center justify-between border-b border-[rgba(22,58,46,0.12)] px-4 py-4 md:px-6">
+              <h3 id="booking-modal-title" className="font-serif text-2xl italic text-[#163a2e] md:text-3xl">
+                Онлайн-запись
+              </h3>
+              <button
+                type="button"
+                onClick={closeBooking}
+                className="flex h-10 w-10 touch-manipulation items-center justify-center text-3xl leading-none text-[#4a7060] transition-colors hover:text-[#163a2e]"
+                aria-label="Закрыть"
+              >
+                ×
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-hidden bg-[#f4f7f5] p-2 md:p-4">
+              <iframe
+                title="Онлайн-запись Thems Barberia (Altegio)"
+                src={BOOKING_URL}
+                className="h-[min(72vh,720px)] w-full border-0 bg-white sm:h-[65vh]"
+              />
+            </div>
+            <p className="shrink-0 border-t border-[rgba(22,58,46,0.12)] px-4 py-3 text-center font-sans text-[12px] text-[#4a7060]">
+              Не загружается?{' '}
+              <a
+                href={BOOKING_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#163a2e] underline underline-offset-2 hover:text-[#1f5040]"
+              >
+                Открыть Altegio в новой вкладке
+              </a>
+            </p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
