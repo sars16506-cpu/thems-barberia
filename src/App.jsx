@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
 const BOOKING_URL = 'https://n1381235.alteg.io/';
+/** Якорь секции с виджетом — запись остаётся на вашем сайте */
+const BOOKING_ANCHOR = '#booking';
 const PHONE_DISPLAY = '+998 93 700 24-42';
 const PHONE_TEL = '+998937002442';
 const INSTAGRAM = 'https://www.instagram.com/thems.barberia/';
@@ -32,6 +34,7 @@ const NAV = [
   { href: '#services', label: 'Услуги' },
   { href: '#masters', label: 'Мастера' },
   { href: '#about', label: 'О нас' },
+  { href: '#booking', label: 'Запись' },
   { href: '#contacts', label: 'Контакты' },
 ];
 
@@ -311,9 +314,7 @@ export default function App() {
 
           <div className="relative z-10 flex items-center gap-4">
             <a
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noreferrer"
+              href={BOOKING_ANCHOR}
               className={`hidden rounded-none px-5 py-2.5 font-sans text-[11px] font-semibold uppercase tracking-[2px] transition-colors duration-300 md:inline-flex ${menuOpen ? 'border border-[#163a2e] bg-[#163a2e] text-white hover:bg-[#1f5040]' : ctaPrimary}`}
             >
               Записаться
@@ -351,9 +352,7 @@ export default function App() {
               </a>
             ))}
             <a
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noreferrer"
+              href={BOOKING_ANCHOR}
               className={`mt-2 inline-flex w-fit rounded-none border px-8 py-4 font-sans text-[11px] font-semibold uppercase tracking-[2px] transition-colors duration-300 ${mobileCta}`}
               onClick={() => setMenuOpen(false)}
             >
@@ -394,9 +393,7 @@ export default function App() {
             </p>
 
             <a
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noreferrer"
+              href={BOOKING_ANCHOR}
               className="mt-10 inline-flex w-full max-w-[min(100%,320px)] justify-center bg-white px-8 py-4 font-sans text-[12px] font-semibold uppercase tracking-[3px] text-[#163a2e] transition-colors duration-300 hover:bg-[#f4f7f5] sm:w-auto sm:max-w-none sm:px-[52px]"
             >
               ЗАПИСАТЬСЯ ОНЛАЙН
@@ -470,9 +467,7 @@ export default function App() {
 
             <div className="mt-16 flex flex-wrap gap-6">
               <a
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noreferrer"
+                href={BOOKING_ANCHOR}
                 className="inline-flex bg-white px-10 py-4 font-sans text-[11px] font-semibold uppercase tracking-[2px] text-[#163a2e] transition-colors duration-300 hover:bg-[#f4f7f5]"
               >
                 Выбрать время
@@ -518,9 +513,7 @@ export default function App() {
 
             <div className="mt-14 flex justify-center">
               <a
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noreferrer"
+                href={BOOKING_ANCHOR}
                 className="inline-flex bg-[#163a2e] px-10 py-4 font-sans text-[11px] font-semibold uppercase tracking-[2px] text-white transition-colors duration-300 hover:bg-[#1f5040]"
               >
                 Записаться
@@ -622,6 +615,41 @@ export default function App() {
           </div>
         </section>
 
+        {/* ОНЛАЙН-ЗАПИСЬ — виджет Altegio внутри страницы */}
+        <section
+          id="booking"
+          data-header-theme="light"
+          className="scroll-mt-28 bg-[#f4f7f5] py-20 lg:py-28"
+        >
+          <div className="mx-auto max-w-[1100px] px-6 lg:px-10">
+            <h2 className="font-serif text-[clamp(40px,5vw,56px)] italic text-[#163a2e]">Онлайн-запись</h2>
+            <div className="mt-5 h-px w-16 bg-[rgba(22,58,46,0.12)]" aria-hidden />
+            <p className="mt-6 max-w-2xl font-sans text-[14px] leading-relaxed text-[#4a7060]">
+              Выберите услугу, мастера и время — форма загружается здесь, без перехода на другую вкладку.
+            </p>
+            <div className="mt-10 overflow-hidden rounded-sm border border-[rgba(22,58,46,0.2)] bg-[#ffffff] shadow-[0_2px_12px_rgba(22,58,46,0.12)]">
+              <iframe
+                title="Онлайн-запись Thems Barberia (Altegio)"
+                src={BOOKING_URL}
+                className="min-h-[min(85vh,880px)] w-full border-0"
+                loading="lazy"
+              />
+            </div>
+            <p className="mt-6 font-sans text-[13px] text-[#4a7060]">
+              Если окно пустое или недоступно в браузере, можно{' '}
+              <a
+                href={BOOKING_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#163a2e] underline underline-offset-4 transition-colors hover:text-[#1f5040]"
+              >
+                открыть запись на сайте Altegio
+              </a>
+              .
+            </p>
+          </div>
+        </section>
+
         {/* КОНТАКТЫ */}
         <section id="contacts" data-header-theme="light" className="scroll-mt-28 bg-[#ffffff] py-24 lg:py-32">
           <div className="mx-auto max-w-[1100px] px-6 lg:px-10">
@@ -677,19 +705,15 @@ export default function App() {
                   <div>
                     <p className="font-sans text-[10px] uppercase tracking-[4px] text-[#163a2e]">Запись</p>
                     <a
-                      href={BOOKING_URL}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-4 inline-flex break-all font-sans text-[14px] text-[#163a2e] underline decoration-[rgba(22,58,46,0.2)] underline-offset-[6px] transition-opacity hover:opacity-75"
+                      href={BOOKING_ANCHOR}
+                      className="mt-4 inline-flex font-sans text-[14px] text-[#163a2e] underline decoration-[rgba(22,58,46,0.2)] underline-offset-[6px] transition-opacity hover:opacity-75"
                     >
-                      n1381235.alteg.io
+                      Форма записи на странице
                     </a>
                   </div>
                 </div>
                 <a
-                  href={BOOKING_URL}
-                  target="_blank"
-                  rel="noreferrer"
+                  href={BOOKING_ANCHOR}
                   className="mt-12 inline-flex w-fit bg-[#163a2e] px-10 py-4 font-sans text-[12px] font-semibold uppercase tracking-[3px] text-white transition-colors duration-300 hover:bg-[#1f5040] lg:mt-0"
                 >
                   Онлайн-запись
