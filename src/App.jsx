@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const BOOKING_URL = 'https://n1381235.alteg.io/';
 const PHONE_DISPLAY = '+998 93 700 24-42';
@@ -196,6 +196,46 @@ export default function App() {
 
   const closeBooking = useCallback(() => {
     setBookingModalOpen(false);
+  }, []);
+
+  const gallerySliderRef = useRef(null);
+  const galleryAnimRef = useRef(null);
+  const galleryPausedRef = useRef(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    let slider = gallerySliderRef.current;
+
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (reduceMotion) return;
+
+    let scrollPos = 0;
+
+    const animate = () => {
+      if (cancelled) return;
+      slider = gallerySliderRef.current;
+      if (!slider) {
+        galleryAnimRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      if (!galleryPausedRef.current && !document.hidden) {
+        scrollPos += 0.65;
+        const half = slider.scrollWidth / 2;
+        if (half > 0 && scrollPos >= half) {
+          scrollPos = 0;
+        }
+        slider.scrollLeft = scrollPos;
+      }
+      galleryAnimRef.current = requestAnimationFrame(animate);
+    };
+
+    galleryAnimRef.current = requestAnimationFrame(animate);
+    return () => {
+      cancelled = true;
+      if (galleryAnimRef.current != null) {
+        cancelAnimationFrame(galleryAnimRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -567,22 +607,46 @@ export default function App() {
           </div>
         </section>
 
-        {/* ГАЛЕРЕЯ — фото с Tilda */}
+        {/* ГАЛЕРЕЯ — горизонтальный автоскролл (как слайдер услуг Uncle Chill) */}
         <section id="photos" data-header-theme="light" className="scroll-mt-28 bg-[#ffffff] py-20 lg:py-28">
           <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
             <h2 className="font-serif text-[clamp(36px,5vw,52px)] italic text-[#163a2e]">Атмосфера салона</h2>
             <div className="mt-5 h-px w-16 bg-[rgba(22,58,46,0.12)]" aria-hidden />
-            <div className="mt-12 grid gap-4 md:grid-cols-3 md:gap-5">
-              {GALLERY_IMGS.map((item) => (
+            <p className="mt-6 max-w-xl font-sans text-[14px] leading-relaxed text-[#4a7060]">
+              Лента фото медленно движётся сама — наведите курсор, чтобы остановить и рассмотреть детали.
+            </p>
+          </div>
+
+          <div
+            className="mt-12 flex w-full overflow-hidden"
+            onMouseEnter={() => {
+              galleryPausedRef.current = true;
+            }}
+            onMouseLeave={() => {
+              galleryPausedRef.current = false;
+            }}
+            onTouchStart={() => {
+              galleryPausedRef.current = true;
+            }}
+            onTouchEnd={() => {
+              galleryPausedRef.current = false;
+            }}
+          >
+            <div
+              ref={gallerySliderRef}
+              className="scrollbar-hide flex min-h-0 min-w-0 w-4/5 mx-auto shrink-0 flex-nowrap gap-4 overflow-x-auto pb-2 pl-6 pr-6 md:gap-5 lg:pl-10 lg:pr-10"
+              aria-label="Галерея салона, автоматическая прокрутка"
+            >
+              {[...GALLERY_IMGS, ...GALLERY_IMGS].map((item, i) => (
                 <figure
-                  key={item.src}
-                  className="overflow-hidden border border-[rgba(22,58,46,0.2)] shadow-[0_2px_12px_rgba(22,58,46,0.15)]"
+                  key={`${item.src}-${i}`}
+                  className="w-[78vw] max-w-[420px] shrink-0 overflow-hidden border border-[rgba(22,58,46,0.2)] shadow-[0_2px_12px_rgba(22,58,46,0.15)] sm:w-[340px] md:w-[380px]"
                 >
                   <img
                     src={item.src}
                     alt={item.alt}
                     className="aspect-[4/5] h-full w-full object-cover md:aspect-[3/4]"
-                    loading="lazy"
+                    loading={i < 3 ? 'eager' : 'lazy'}
                     decoding="async"
                   />
                 </figure>
