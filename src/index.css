@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Явные значения — без theme(), чтобы не зависеть от синхронизации tailwind.config */
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background-color: #ffffff;
+  color: #0f1f1a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
