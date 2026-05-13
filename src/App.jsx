@@ -321,7 +321,7 @@ export default function App() {
 
             <button
               type="button"
-              className={`flex h-11 w-11 items-center justify-center rounded border transition-colors duration-300 md:hidden ${burgerRing}`}
+              className={`flex h-11 w-11 touch-manipulation items-center justify-center rounded border transition-colors duration-300 md:hidden ${burgerRing}`}
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
               aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
@@ -397,7 +397,7 @@ export default function App() {
               href={BOOKING_URL}
               target="_blank"
               rel="noreferrer"
-              className="mt-10 inline-flex bg-white px-[52px] py-4 font-sans text-[12px] font-semibold uppercase tracking-[3px] text-[#163a2e] transition-colors duration-300 hover:bg-[#f4f7f5]"
+              className="mt-10 inline-flex w-full max-w-[min(100%,320px)] justify-center bg-white px-8 py-4 font-sans text-[12px] font-semibold uppercase tracking-[3px] text-[#163a2e] transition-colors duration-300 hover:bg-[#f4f7f5] sm:w-auto sm:max-w-none sm:px-[52px]"
             >
               ЗАПИСАТЬСЯ ОНЛАЙН
             </a>
@@ -446,13 +446,15 @@ export default function App() {
                   <ul className="mt-8 space-y-10">
                     {group.items.map((s) => (
                       <li key={s.name}>
-                        <div className="flex items-end gap-3">
-                          <span className="shrink-0 font-serif text-[22px] text-white md:text-[24px]">{s.name}</span>
+                        <div className="flex items-baseline justify-between gap-4 md:items-end md:gap-3">
+                          <span className="min-w-0 flex-1 font-serif text-[20px] leading-snug text-white md:flex-none md:text-[22px] lg:text-[24px]">
+                            {s.name}
+                          </span>
                           <span
-                            className="mb-[7px] min-h-[1px] min-w-[12px] flex-1 border-b border-dotted border-white/25"
+                            className="mb-[7px] hidden min-h-[1px] min-w-[12px] flex-1 border-b border-dotted border-white/25 md:block"
                             aria-hidden
                           />
-                          <span className="shrink-0 font-sans text-[13px] uppercase tracking-[1px] text-white/90">
+                          <span className="shrink-0 font-sans text-[12px] uppercase tracking-[1px] text-white/90 sm:text-[13px]">
                             {s.price}
                           </span>
                         </div>
