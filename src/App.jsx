@@ -458,7 +458,7 @@ export default function App() {
             height={1080}
             decoding="async"
           />
-          <div className="absolute inset-0 bg-[rgba(22,58,46,0.72)]" aria-hidden />
+          <div className="absolute inset-0 bg-[rgba(22,58,46,0.3)]" aria-hidden />
 
           <div className="relative z-10 mx-auto max-w-[920px] px-6 py-28 text-center lg:px-10">
             <p className="font-sans text-[11px] uppercase tracking-[6px] text-white/70">
